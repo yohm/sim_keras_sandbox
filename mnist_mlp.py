@@ -12,10 +12,13 @@ from keras.datasets import mnist
 from keras.models import Sequential
 from keras.layers import Dense, Dropout
 from keras.optimizers import RMSprop
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
 
 batch_size = 128
 num_classes = 10
-epochs = 10
+epochs = 3
 
 # the data, shuffled and split between train and test sets
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
@@ -54,3 +57,32 @@ history = model.fit(x_train, y_train,
 score = model.evaluate(x_test, y_test, verbose=0)
 print('Test loss:', score[0])
 print('Test accuracy:', score[1])
+
+def plot_history(history):
+    # print(history.history.keys())
+
+    # plot history of accuracy
+    plt.plot(history.history['acc'])
+    plt.plot(history.history['val_acc'])
+    plt.title('model accuracy')
+    plt.xlabel('epoch')
+    plt.ylabel('accuracy')
+    plt.legend(['acc', 'val_acc'], loc='lower right')
+    plt.ylim(ymin = 0.9, ymax=1.0)
+    plt.savefig("accuracy.png")
+    plt.clf()
+    #plt.show()
+
+    # plot history of loss
+    plt.plot(history.history['loss'])
+    plt.plot(history.history['val_loss'])
+    plt.title('model loss')
+    plt.xlabel('epoch')
+    plt.ylabel('loss')
+    plt.legend(['loss', 'val_loss'], loc='lower right')
+    plt.ylim(ymin=0.0, ymax=0.25)
+    plt.savefig("loss.png")
+    #plt.show()
+
+plot_history(history)
+
