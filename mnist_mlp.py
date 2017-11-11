@@ -7,6 +7,20 @@ Gets to 98.40% test accuracy after 20 epochs
 
 from __future__ import print_function
 
+import sys,json
+if len(sys.argv) != 2:
+    sys.stderr.write("[Error] invalid number of arguments\n")
+    sys.stderr.write("  Usage : python %s _input.json\n" % sys.argv[0])
+    raise Exception("invalid argument")
+
+with open( sys.argv[1] ) as f:
+    params = json.load(f)
+
+print(params)
+
+import numpy as np
+np.random.seed( params["_seed"] )
+
 import keras
 from keras.datasets import mnist
 from keras.models import Sequential
@@ -16,9 +30,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
-batch_size = 128
 num_classes = 10
-epochs = 3
 
 # the data, shuffled and split between train and test sets
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
@@ -37,10 +49,10 @@ y_train = keras.utils.to_categorical(y_train, num_classes)
 y_test = keras.utils.to_categorical(y_test, num_classes)
 
 model = Sequential()
-model.add(Dense(512, activation='relu', input_shape=(784,)))
-model.add(Dropout(0.2))
-model.add(Dense(512, activation='relu'))
-model.add(Dropout(0.2))
+model.add(Dense( params["dense1_size"], activation='relu', input_shape=(784,)))
+model.add(Dropout( params["dropout1_prob"] ))
+model.add(Dense( params["dense2_size"], activation='relu'))
+model.add(Dropout( params["dropout2_prob"] ))
 model.add(Dense(num_classes, activation='softmax'))
 
 model.summary()
@@ -50,11 +62,11 @@ model.compile(loss='categorical_crossentropy',
               metrics=['accuracy'])
 
 history = model.fit(x_train, y_train,
-                    batch_size=batch_size,
-                    epochs=epochs,
+                    batch_size=params["batch_size"],
+                    epochs=params["epochs"],
                     verbose=1,
                     validation_data=(x_test, y_test))
-score = model.evaluate(x_test, y_test, verbose=0)
+score = model.evaluate(x_test, y_test, verbose=1)
 print('Test loss:', score[0])
 print('Test accuracy:', score[1])
 
