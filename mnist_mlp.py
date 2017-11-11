@@ -26,6 +26,7 @@ from keras.datasets import mnist
 from keras.models import Sequential
 from keras.layers import Dense, Dropout
 from keras.optimizers import RMSprop
+from keras.callbacks import EarlyStopping
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -61,11 +62,15 @@ model.compile(loss='categorical_crossentropy',
               optimizer=RMSprop(),
               metrics=['accuracy'])
 
+early_stopping = EarlyStopping(patience=0, verbose=1)
+
+
 history = model.fit(x_train, y_train,
                     batch_size=params["batch_size"],
                     epochs=params["epochs"],
                     verbose=1,
-                    validation_data=(x_test, y_test))
+                    validation_data=(x_test, y_test),
+                    callbacks=[early_stopping])
 score = model.evaluate(x_test, y_test, verbose=1)
 print('Test loss:', score[0])
 print('Test accuracy:', score[1])
