@@ -69,6 +69,10 @@ history = model.fit(x_train, y_train,
 score = model.evaluate(x_test, y_test, verbose=1)
 print('Test loss:', score[0])
 print('Test accuracy:', score[1])
+with open("_output.json", 'w') as f:
+    obj = {"test_loss": score[0], "test_accuracy": score[1]}
+    f.write( json.dumps(obj) )
+    f.flush()
 
 def plot_history(history):
     # print(history.history.keys())
